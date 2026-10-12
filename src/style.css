@@ -1,0 +1,165 @@
+/*
+ * Zero specificity, so a page can map its own theme onto these. The dark
+ * class sits on the map container while the layer's theme is dark.
+ */
+:where(.leaflet-container) {
+  --gb-darkest: #0f380f;
+  --gb-dark: #306230;
+  --gb-light: #8bac0f;
+  --gb-lighter: #c8d3a2;
+  --gb-lightest: #dde4c3;
+  --gb-highlight: #c8231b;
+  --gb-font: inherit;
+}
+
+:where(.leaflet-container.leaflet-gameboy-dark) {
+  --gb-darkest: #d3dfb0;
+  --gb-dark: #9bbc0f;
+  --gb-light: #306230;
+  --gb-lighter: #253f22;
+  --gb-lightest: #142a12;
+  --gb-highlight: #e0392f;
+}
+
+/* Per tile: Safari ignores an SVG filter set on the pane above them */
+.leaflet-gameboy-tiles .leaflet-tile {
+  filter: url(#leaflet-gameboy-light);
+}
+
+.leaflet-gameboy-tiles.leaflet-gameboy-dark .leaflet-tile {
+  filter: url(#leaflet-gameboy-dark);
+}
+
+.leaflet-gameboy-tiles.leaflet-gameboy-off .leaflet-tile {
+  filter: none;
+}
+
+/* Doubled class beats leaflet.css whichever loads last */
+.leaflet-container.leaflet-gameboy {
+  border: 2px solid var(--gb-darkest);
+  border-radius: 0;
+  background: var(--gb-lighter);
+  box-shadow: 6px 6px 0 var(--gb-light);
+  font-family: var(--gb-font);
+
+  .leaflet-bar {
+    border: 0;
+    border-radius: 0;
+    box-shadow: 4px 4px 0 var(--gb-light);
+  }
+
+  .leaflet-bar :is(a, button) {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--gb-darkest);
+    color: var(--gb-lightest);
+    cursor: pointer;
+
+    & + a {
+      border-top: 2px solid var(--gb-lightest);
+    }
+
+    & span {
+      display: none;
+    }
+
+    &::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background: currentColor;
+      mask: center / 100% 100% no-repeat;
+    }
+
+    &.leaflet-control-zoom-in::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M2 0h1v5H2zM0 2h5v1H0z'/%3E%3C/svg%3E");
+    }
+
+    &.leaflet-control-zoom-out::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M0 2h5v1H0z'/%3E%3C/svg%3E");
+    }
+
+    &.leaflet-gameboy-toggle::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h2v2H0zM3 0h2v2H3zM0 3h2v2H0zM3 3h2v2H3z'/%3E%3C/svg%3E");
+    }
+
+    &:hover,
+    &:focus-visible,
+    &[aria-pressed="true"] {
+      background: var(--gb-dark);
+      color: var(--gb-lightest);
+    }
+
+    &.leaflet-disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .leaflet-control-attribution {
+    background: var(--gb-lightest);
+    color: var(--gb-dark);
+
+    & a {
+      color: var(--gb-darkest);
+    }
+  }
+
+  .leaflet-tooltip {
+    border: 2px solid var(--gb-darkest);
+    border-radius: 0;
+    background: var(--gb-lightest);
+    box-shadow: none;
+    color: var(--gb-darkest);
+    font-family: var(--gb-font);
+  }
+
+  .leaflet-tooltip-top::before {
+    border-top-color: var(--gb-darkest);
+  }
+
+  .leaflet-tooltip-bottom::before {
+    border-bottom-color: var(--gb-darkest);
+  }
+
+  .leaflet-tooltip-left::before {
+    border-left-color: var(--gb-darkest);
+  }
+
+  .leaflet-tooltip-right::before {
+    border-right-color: var(--gb-darkest);
+  }
+}
+
+/*
+ * Opt-in classes for vector layers, passed as Leaflet's className option.
+ * CSS stroke beats the colour Leaflet sets as an attribute.
+ */
+.leaflet-gameboy-line,
+.leaflet-gameboy-marker {
+  shape-rendering: crispEdges;
+}
+
+.leaflet-gameboy-line {
+  stroke: var(--gb-darkest);
+  stroke-opacity: 1;
+}
+
+.leaflet-gameboy-line-dashed {
+  stroke-dasharray: 6 6;
+}
+
+.leaflet-gameboy-line-highlight {
+  stroke: var(--gb-highlight);
+}
+
+.leaflet-gameboy-marker {
+  stroke: var(--gb-darkest);
+  fill: var(--gb-lightest);
+  fill-opacity: 1;
+}

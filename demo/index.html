@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>leaflet-gameboy</title>
+    <link rel="icon" href="data:," />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../dist/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "leaflet": "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js",
+          "leaflet-gameboy": "../dist/index.js"
+        }
+      }
+    </script>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: ui-monospace, monospace;
+        background: #dde4c3;
+        color: #0f380f;
+        accent-color: currentColor;
+      }
+      a {
+        color: inherit;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          background: #142a12;
+          color: #d3dfb0;
+        }
+      }
+      body {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      #map {
+        height: 70vh;
+        min-height: 320px;
+      }
+      /* Clears the map's 6px offset shadow */
+      #map + p {
+        margin-top: 22px;
+      }
+      fieldset {
+        border: 0;
+        padding: 0;
+        margin: 16px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>leaflet-gameboy</h1>
+    <p>
+      OpenStreetMap tiles repainted in the greens of the original Game Boy.
+      <a href="https://github.com/sirlisko/leaflet-gameboy">Source</a>
+    </p>
+    <fieldset>
+      <legend>View</legend>
+      <label><input type="radio" name="view" value="city" checked /> city</label>
+      <label><input type="radio" name="view" value="country" /> country</label>
+    </fieldset>
+    <fieldset>
+      <legend>Theme</legend>
+      <label><input type="radio" name="theme" value="auto" checked /> auto</label>
+      <label><input type="radio" name="theme" value="light" /> light</label>
+      <label><input type="radio" name="theme" value="dark" /> dark</label>
+    </fieldset>
+    <div id="map"></div>
+    <p><small>
+      Game Boy is a trademark of Nintendo. This project is not affiliated
+      with, endorsed by or sponsored by Nintendo.
+    </small></p>
+
+    <script type="module">
+      import { map as createMap, polyline, circleMarker } from "leaflet";
+      import GameboyTileLayer, { gameboyToggle } from "leaflet-gameboy";
+
+      const views = {
+        city: [[51.506, -0.1], 14],
+        country: [[42.5, 12.5], 6],
+      };
+      const map = createMap("map").setView(...views.city);
+
+      const tiles = new GameboyTileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom: 18,
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+      ).addTo(map);
+      gameboyToggle({ layer: tiles }).addTo(map);
+
+      const route = [
+        [51.5007, -0.1246],
+        [51.5138, -0.0984],
+        [51.5055, -0.0754],
+      ];
+      polyline(route, {
+        className: "leaflet-gameboy-line leaflet-gameboy-line-highlight",
+        weight: 3,
+      }).addTo(map);
+      route.forEach((latlng, i) =>
+        circleMarker(latlng, {
+          className: "leaflet-gameboy-marker",
+          radius: 6,
+          weight: 2,
+        })
+          .addTo(map)
+          .bindTooltip(["Big Ben", "St Paul's", "Tower Bridge"][i], {
+            permanent: true,
+            direction: "top",
+            offset: [0, -6],
+          })
+      );
+
+      document.querySelectorAll("input[name=view]").forEach(input =>
+        input.addEventListener("change", () => map.setView(...views[input.value]))
+      );
+
+      document.querySelectorAll("input[name=theme]").forEach(input =>
+        input.addEventListener("change", () => tiles.setTheme(input.value))
+      );
+    </script>
+  </body>
+</html>
